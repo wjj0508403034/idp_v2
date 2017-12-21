@@ -1,0 +1,12 @@
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
+<head>
+<title>Admin login page</title>
+</head>
+<body>
+	<form action="/admin/login" method="post">
+		<input name="username" type="text" placehoder="User Name"></input>
+		<input name="password" type="password" placehoder="Password"></input>
+		<input name="loginButton" type="submit" value="Login"></input>
+	</form>
+</body>
+</html>
