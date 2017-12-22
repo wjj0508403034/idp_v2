@@ -10,8 +10,11 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.AuthorityUtils;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.huoyun.common.metadata.annotation.BusinessObject;
+import com.huoyun.common.metadata.annotation.BusinessObjectProperty;
 import com.huoyun.common.persistence.BaseEntity;
 
+@BusinessObject
 @Entity
 @Table
 public class AdminAccount extends BaseEntity {
@@ -19,18 +22,23 @@ public class AdminAccount extends BaseEntity {
 	private static final long serialVersionUID = -5766309354484780664L;
 
 	@Column
+	@BusinessObjectProperty
 	private String firstName;
 
 	@Column
+	@BusinessObjectProperty
 	private String lastName;
 
 	@Column
+	@BusinessObjectProperty
 	private String email;
 
 	@Column
+	@BusinessObjectProperty
 	private String password;
 	
 	@Column
+	@BusinessObjectProperty
 	private boolean locked;
 
 	public String getFirstName() {

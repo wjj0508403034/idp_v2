@@ -10,6 +10,7 @@ import org.hibernate.annotations.GenericGenerator;
 import org.joda.time.DateTime;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.huoyun.common.metadata.annotation.BusinessObjectProperty;
 
 @MappedSuperclass
 public abstract class BaseEntity implements Entity {
@@ -19,15 +20,18 @@ public abstract class BaseEntity implements Entity {
 	@Id
 	@GenericGenerator(name = "IdGenerator", strategy = "com.huoyun.common.persistence.IdGenerator")
 	@GeneratedValue(generator = "IdGenerator")
+	@BusinessObjectProperty
 	private Long id;
 
 	@Version
 	private Long version;
 
 	@Column
+	@BusinessObjectProperty
 	private DateTime createTime;
 
 	@Column
+	@BusinessObjectProperty
 	private DateTime updateTime;
 
 	@JsonIgnore
