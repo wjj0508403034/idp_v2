@@ -31,6 +31,7 @@ public abstract class BaseEntity implements Entity {
 	private DateTime updateTime;
 
 	@JsonIgnore
+	@Override
 	public Long getVersion() {
 		return version;
 	}
@@ -43,6 +44,7 @@ public abstract class BaseEntity implements Entity {
 		return createTime;
 	}
 
+	@Override
 	public void setCreateTime(DateTime createTime) {
 		this.createTime = createTime;
 	}
@@ -51,6 +53,7 @@ public abstract class BaseEntity implements Entity {
 		return updateTime;
 	}
 
+	@Override
 	public void setUpdateTime(DateTime updateTime) {
 		this.updateTime = updateTime;
 	}
@@ -59,6 +62,7 @@ public abstract class BaseEntity implements Entity {
 		this.id = id;
 	}
 
+	@Override
 	public Long getId() {
 		return this.id;
 	}
