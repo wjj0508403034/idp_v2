@@ -4,9 +4,12 @@
 </head>
 <body>
 	<form action="/admin/login" method="post">
-		<input name="username" type="text" placehoder="User Name"></input>
-		<input name="password" type="password" placehoder="Password"></input>
-		<input name="loginButton" type="submit" value="Login"></input>
+		<input th:name="username" type="text" placehoder="User Name" th:value="${username}"></input>
+		<div th:if="${errors.hasError('username')}" th:text="${errors.getErrorMessage('username')}"></div>
+		<input th:name="password" type="password" placehoder="Password"></input>
+		<div th:if="${errors.hasError('password')}" th:text="${errors.getErrorMessage('password')}"></div>
+		<input name="loginButton" type="submit"></input>
+		<div th:text="${username}"></div>
 	</form>
 </body>
 </html>

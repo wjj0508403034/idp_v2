@@ -11,9 +11,11 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+import com.huoyun.common.localization.LocalizationService;
 import com.huoyun.common.security.AuthenticationEventListener;
 import com.huoyun.common.security.AuthenticationFailureHandler;
 import com.huoyun.common.security.AuthenticationSuccessHandler;
+import com.huoyun.idp.admin.authentication.AdminAuthenticationFailureHandler;
 import com.huoyun.idp.admin.authentication.AdminAuthenticationFilter;
 import com.huoyun.idp.admin.authentication.AdminAuthenticationProvider;
 import com.huoyun.idp.config.WebSecurityOrdered;
@@ -27,6 +29,9 @@ public class AdminWebSecurityConfigurer extends WebSecurityConfigurerAdapter {
 
 	@Autowired
 	private AuthenticationEventListener authenticationEventListener;
+	
+	@Autowired
+	private LocalizationService localizationService;
 
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
@@ -67,8 +72,9 @@ public class AdminWebSecurityConfigurer extends WebSecurityConfigurerAdapter {
 	}
 
 	private AuthenticationFailureHandler authenticationFailureHandler() {
-		AuthenticationFailureHandler failureHandler = new AuthenticationFailureHandler(AdminUrls.LOGIN_FAILURE_URL);
+		AuthenticationFailureHandler failureHandler = new AdminAuthenticationFailureHandler(AdminUrls.LOGIN_FAILURE_URL);
 		failureHandler.addListener(this.authenticationEventListener);
+		failureHandler.setLocalizationService(this.localizationService);
 		return failureHandler;
 	}
 }
