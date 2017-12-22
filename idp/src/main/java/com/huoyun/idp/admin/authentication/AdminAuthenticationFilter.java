@@ -6,7 +6,6 @@ import javax.servlet.http.HttpServletResponse;
 import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
@@ -16,7 +15,6 @@ public class AdminAuthenticationFilter extends UsernamePasswordAuthenticationFil
 
 	public AdminAuthenticationFilter() {
 		this.setRequiresAuthenticationRequestMatcher(new AntPathRequestMatcher(AdminUrls.LOGIN_PROCESSING_URL, "POST"));
-		this.authenticationSuccessHandler().setDefaultTargetUrl(AdminUrls.LOGIN_SUCCESS_URL);
 	}
 
 	@Override
@@ -42,9 +40,5 @@ public class AdminAuthenticationFilter extends UsernamePasswordAuthenticationFil
 		AdminAuthenticationToken authRequest = new AdminAuthenticationToken(username, password);
 
 		return this.getAuthenticationManager().authenticate(authRequest);
-	}
-
-	private SavedRequestAwareAuthenticationSuccessHandler authenticationSuccessHandler() {
-		return (SavedRequestAwareAuthenticationSuccessHandler) this.getSuccessHandler();
 	}
 }
