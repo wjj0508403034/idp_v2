@@ -5,6 +5,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.joda.time.DateTime;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,13 +24,28 @@ public class LoginHistoryServiceImpl extends AbstractBusinessService implements 
 	@Override
 	public void storeLoginRecord(HttpServletRequest request, HttpServletResponse response,
 			Authentication authentication) {
-		LoginHistory history = new LoginHistory();
+		LoginHistory history = this.newLoginHistory(request);
 		history.setLoginAccount(this.getAccount(authentication));
+		history.setLoginStatus(LoginStatus.SUCCESS);
+		this.loginHistoryRepo().save(history);
+	}
+
+	@Transactional
+	@Override
+	public void storeLoginRecord(HttpServletRequest request, HttpServletResponse response,
+			AuthenticationException exception) {
+		LoginHistory history = this.newLoginHistory(request);
+		history.setLoginStatus(LoginStatus.FAILURE);
+		history.setLoginAccount(this.getAccount(request));
+		this.loginHistoryRepo().save(history);
+	}
+
+	private LoginHistory newLoginHistory(HttpServletRequest request) {
+		LoginHistory history = new LoginHistory();
 		history.setIp(this.getClientIp(request));
 		history.setDevice(this.getDevice(request));
 		history.setLoginDate(DateTime.now());
-		history.setLoginStatus(authentication.isAuthenticated() ? LoginStatus.SUCCESS : LoginStatus.FAILURE);
-		this.loginHistoryRepo().save(history);
+		return history;
 	}
 
 	private LoginHistoryRepo loginHistoryRepo() {
@@ -59,4 +75,9 @@ public class LoginHistoryServiceImpl extends AbstractBusinessService implements 
 
 		return null;
 	}
+
+	private String getAccount(HttpServletRequest request) {
+		return request.getParameter("username");
+	}
+
 }

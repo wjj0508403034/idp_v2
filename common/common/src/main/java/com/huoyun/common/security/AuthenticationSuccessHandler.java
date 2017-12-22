@@ -26,7 +26,7 @@ public class AuthenticationSuccessHandler extends SavedRequestAwareAuthenticatio
 		LOGGER.info("Login success");
 
 		for (AuthenticationEventListener listener : authenticationListeners) {
-			listener.receive(request, response, authentication);
+			listener.success(request, response, authentication);
 		}
 
 		super.onAuthenticationSuccess(request, response, authentication);

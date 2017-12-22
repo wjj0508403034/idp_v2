@@ -12,6 +12,7 @@ import org.springframework.security.web.authentication.LoginUrlAuthenticationEnt
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import com.huoyun.common.security.AuthenticationEventListener;
+import com.huoyun.common.security.AuthenticationFailureHandler;
 import com.huoyun.common.security.AuthenticationSuccessHandler;
 import com.huoyun.idp.admin.authentication.AdminAuthenticationFilter;
 import com.huoyun.idp.admin.authentication.AdminAuthenticationProvider;
@@ -23,7 +24,7 @@ public class AdminWebSecurityConfigurer extends WebSecurityConfigurerAdapter {
 
 	@Autowired
 	private AuthenticationManager authenticationManager;
-	
+
 	@Autowired
 	private AuthenticationEventListener authenticationEventListener;
 
@@ -44,6 +45,7 @@ public class AdminWebSecurityConfigurer extends WebSecurityConfigurerAdapter {
 		AdminAuthenticationFilter filter = new AdminAuthenticationFilter();
 		filter.setAuthenticationManager(this.authenticationManager);
 		filter.setAuthenticationSuccessHandler(this.authenticationSuccessHandler());
+		filter.setAuthenticationFailureHandler(this.authenticationFailureHandler());
 		return filter;
 	}
 
@@ -51,16 +53,22 @@ public class AdminWebSecurityConfigurer extends WebSecurityConfigurerAdapter {
 	public AdminAuthenticationProvider authenticationProvider() {
 		return new AdminAuthenticationProvider();
 	}
-	
+
 	@Override
 	protected void configure(AuthenticationManagerBuilder auth) throws Exception {
 		auth.authenticationProvider(this.authenticationProvider());
 	}
-	
-	private AuthenticationSuccessHandler authenticationSuccessHandler(){
+
+	private AuthenticationSuccessHandler authenticationSuccessHandler() {
 		AuthenticationSuccessHandler successHandler = new AuthenticationSuccessHandler();
 		successHandler.addListener(this.authenticationEventListener);
 		successHandler.setDefaultTargetUrl(AdminUrls.LOGIN_SUCCESS_URL);
 		return successHandler;
+	}
+
+	private AuthenticationFailureHandler authenticationFailureHandler() {
+		AuthenticationFailureHandler failureHandler = new AuthenticationFailureHandler(AdminUrls.LOGIN_FAILURE_URL);
+		failureHandler.addListener(this.authenticationEventListener);
+		return failureHandler;
 	}
 }
