@@ -2,6 +2,8 @@ package com.huoyun.common.metadata;
 
 import java.util.List;
 
+import com.huoyun.common.metadata.annotation.BusinessObject;
+
 public interface BusinessObjectMetadata {
 
 	String getName();
@@ -19,5 +21,7 @@ public interface BusinessObjectMetadata {
 	BusinessObjectPropertyMetadata getPropertyMetadata(String propertyName);
 
 	String getIdentityName();
+
+	Class<? extends BusinessObject> getBoClass();
 
 }

@@ -58,6 +58,17 @@ public class BusinessObjectMetadataRepositoryImpl extends AbstractBusinessServic
 		return this.getBoMeta(NamespaceConstants.SYSTEM_BUSINESS_OBJECT_NAMESPACE, boName);
 	}
 
+	@Override
+	public <T extends BusinessObject> BusinessObjectMetadata getBoMeta(Class<T> boType) {
+		for (BusinessObjectMetadata boMeta : this.boMetaMap.values()) {
+			if (boMeta.getBoClass() == boType) {
+				return boMeta;
+			}
+		}
+
+		return null;
+	}
+
 	private Set<Class<?>> loadBusinessObjects() {
 		Reflections reflections = new Reflections(new ConfigurationBuilder().setUrls(this.scanUrls())
 				.setScanners(new SubTypesScanner(), new TypeAnnotationsScanner()).useParallelExecutor());

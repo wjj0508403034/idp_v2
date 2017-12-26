@@ -19,9 +19,11 @@ public class BusinessObjectPropertyMetadataImpl implements BusinessObjectPropert
 	private boolean searchable;
 	private String label;
 	private final BusinessObjectMetadataImpl boMeta;
+	private Field field;
 
 	public BusinessObjectPropertyMetadataImpl(BusinessObjectMetadataImpl businessObjectMetadataImpl, Field field,
 			BusinessObjectProperty boPropAnnotation) {
+		this.field = field;
 		this.boMeta = businessObjectMetadataImpl;
 		this.name = field.getName();
 		this.readonly = boPropAnnotation.readonly();
@@ -92,6 +94,12 @@ public class BusinessObjectPropertyMetadataImpl implements BusinessObjectPropert
 
 	public void setLabel(String label) {
 		this.label = label;
+	}
+	
+	@JsonIgnore
+	@Override
+	public Class<?> getRuntimeType() {
+		return this.field.getType();
 	}
 
 	private String getLocalizedLabel() {

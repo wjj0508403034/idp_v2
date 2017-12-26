@@ -16,4 +16,6 @@ public interface BusinessObjectPropertyMetadata {
 
 	String getLabel();
 
+	Class<?> getRuntimeType();
+
 }

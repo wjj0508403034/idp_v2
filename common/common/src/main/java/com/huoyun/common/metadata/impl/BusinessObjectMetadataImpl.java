@@ -103,6 +103,7 @@ public class BusinessObjectMetadataImpl extends AbstractBusinessService implemen
 	}
 
 	@JsonIgnore
+	@Override
 	public Class<? extends BusinessObject> getBoClass() {
 		return boClass;
 	}
