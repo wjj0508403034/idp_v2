@@ -17,16 +17,20 @@ import org.springframework.data.domain.Pageable;
 import com.huoyun.common.bo.BoRepository;
 import com.huoyun.common.bo.BoSpecification;
 import com.huoyun.common.exceptions.BusinessException;
-import com.huoyun.common.metadata.annotation.BusinessObject;
 
-public class BoRepositoryImpl<T extends BusinessObject> implements BoRepository<T> {
+public class BoRepositoryImpl<T> implements BoRepository<T> {
 
 	private EntityManager entityManager;
 	private Class<T> boClass;
 
-	public BoRepositoryImpl(EntityManager entityManager, Class<T> boClass) {
+	private BoRepositoryImpl(EntityManager entityManager, Class<T> boClass) {
 		this.entityManager = entityManager;
 		this.boClass = boClass;
+	}
+
+	public static <T> BoRepository<T> newRepo(EntityManager entityManager, Class<T> boClass) {
+		BoRepositoryImpl<T> repo = new BoRepositoryImpl<T>(entityManager, boClass);
+		return repo;
 	}
 
 	@Override
@@ -43,7 +47,6 @@ public class BoRepositoryImpl<T extends BusinessObject> implements BoRepository<
 		return page;
 	}
 
-	@SuppressWarnings("unchecked")
 	private <S> Root<T> applySpecificationToCriteria(BoSpecification<T> spec, CriteriaQuery<S> query)
 			throws BusinessException {
 

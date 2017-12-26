@@ -28,9 +28,9 @@ public class BusinessObjectMetadataImpl extends AbstractBusinessService implemen
 	private boolean exposed;
 	private String label;
 	private final Map<String, BusinessObjectPropertyMetadata> propertyMetadatasMap = new HashMap<>();
-	private final Class<? extends BusinessObject> boClass;
+	private final Class<?> boClass;
 
-	public BusinessObjectMetadataImpl(Class<? extends BusinessObject> boClass, ApplicationContext applicationContext) {
+	public BusinessObjectMetadataImpl(Class<?> boClass, ApplicationContext applicationContext) {
 		super.setApplicationContext(applicationContext);
 		this.boClass = boClass;
 		BusinessObject boAnnotation = boClass.getAnnotation(BusinessObject.class);
@@ -104,7 +104,7 @@ public class BusinessObjectMetadataImpl extends AbstractBusinessService implemen
 
 	@JsonIgnore
 	@Override
-	public Class<? extends BusinessObject> getBoClass() {
+	public Class<?> getBoClass() {
 		return boClass;
 	}
 

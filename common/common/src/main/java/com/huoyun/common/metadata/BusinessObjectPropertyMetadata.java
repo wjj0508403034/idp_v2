@@ -18,4 +18,8 @@ public interface BusinessObjectPropertyMetadata {
 
 	Class<?> getRuntimeType();
 
+	boolean isExposed();
+
+	BusinessObjectMetadata getBoMeta();
+
 }

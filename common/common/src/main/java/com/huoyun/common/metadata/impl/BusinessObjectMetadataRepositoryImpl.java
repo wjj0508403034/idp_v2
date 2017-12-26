@@ -34,13 +34,11 @@ public class BusinessObjectMetadataRepositoryImpl extends AbstractBusinessServic
 
 	private final Map<String, BusinessObjectMetadata> boMetaMap = new HashMap<>();
 
-	@SuppressWarnings("unchecked")
 	@PostConstruct
 	public void init() {
 		LOGGER.info("init system bo metadata ...");
 
-		for (Class<?> klass : this.loadBusinessObjects()) {
-			Class<? extends BusinessObject> boClass = (Class<? extends BusinessObject>) klass;
+		for (Class<?> boClass : this.loadBusinessObjects()) {
 			BusinessObjectMetadataImpl boMeta = new BusinessObjectMetadataImpl(boClass, this.getApplicationContext());
 			this.boMetaMap.put(boMeta.getIdentityName(), boMeta);
 		}
@@ -59,7 +57,7 @@ public class BusinessObjectMetadataRepositoryImpl extends AbstractBusinessServic
 	}
 
 	@Override
-	public <T extends BusinessObject> BusinessObjectMetadata getBoMeta(Class<T> boType) {
+	public BusinessObjectMetadata getBoMeta(Class<?> boType) {
 		for (BusinessObjectMetadata boMeta : this.boMetaMap.values()) {
 			if (boMeta.getBoClass() == boType) {
 				return boMeta;

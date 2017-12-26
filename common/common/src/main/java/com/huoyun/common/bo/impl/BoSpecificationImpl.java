@@ -7,11 +7,10 @@ import javax.persistence.criteria.Root;
 
 import com.huoyun.common.bo.BoSpecification;
 import com.huoyun.common.exceptions.BusinessException;
-import com.huoyun.common.metadata.annotation.BusinessObject;
 import com.huoyun.common.query.Filter;
 import com.huoyun.common.query.Query;
 
-public class BoSpecificationImpl<T extends BusinessObject> implements BoSpecification<T> {
+public class BoSpecificationImpl<T> implements BoSpecification<T> {
 
 	private Query query;
 	private Class<T> boClass;
@@ -20,7 +19,7 @@ public class BoSpecificationImpl<T extends BusinessObject> implements BoSpecific
 		this.query = query;
 	}
 
-	public static <T extends BusinessObject> BoSpecificationImpl<T> createBoSpec(Class<T> klass, Query query)
+	public static <T> BoSpecificationImpl<T> createBoSpec(Class<T> klass, Query query)
 			throws BusinessException {
 		BoSpecificationImpl<T> boSpec = new BoSpecificationImpl<T>(query);
 		boSpec.boClass = klass;
@@ -41,7 +40,7 @@ public class BoSpecificationImpl<T extends BusinessObject> implements BoSpecific
 	}
 
 	@Override
-	public Class<? extends BusinessObject> getBoClass(){
+	public Class<T> getBoClass(){
 		return this.boClass;
 	}
 

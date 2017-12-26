@@ -8,20 +8,18 @@ import com.huoyun.common.bo.BoRepository;
 import com.huoyun.common.bo.BusinessObjectFacade;
 import com.huoyun.common.metadata.BusinessObjectMetadata;
 import com.huoyun.common.metadata.BusinessObjectMetadataRepository;
-import com.huoyun.common.metadata.annotation.BusinessObject;
 import com.huoyun.common.service.AbstractBusinessService;
 
 @Service
 public class BusinessObjectFacadeImpl extends AbstractBusinessService implements BusinessObjectFacade {
 
-	@SuppressWarnings({ "rawtypes", "unchecked" })
 	@Override
-	public <T extends BusinessObject> BoRepository<T> getBoRepository(Class<T> boType) {
+	public BoRepository<?> getBoRepository(Class<?> boType) {
 		BusinessObjectMetadata boMeta = this.boMetaRepo().getBoMeta(boType);
 		if (boMeta == null) {
 			throw new RuntimeException(String.format("Entity {0} not found", boType));
 		}
-		return new BoRepositoryImpl(this.entityManager(),boType);
+		return BoRepositoryImpl.newRepo(this.entityManager(), boType);
 	}
 
 	private EntityManager entityManager() {

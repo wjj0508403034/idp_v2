@@ -4,6 +4,7 @@ import java.lang.reflect.Field;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.huoyun.common.localization.LocalizationService;
+import com.huoyun.common.metadata.BusinessObjectMetadata;
 import com.huoyun.common.metadata.BusinessObjectMetadataConfigurer;
 import com.huoyun.common.metadata.BusinessObjectMetadataConfigurerAdapter;
 import com.huoyun.common.metadata.BusinessObjectPropertyMetadata;
@@ -20,6 +21,7 @@ public class BusinessObjectPropertyMetadataImpl implements BusinessObjectPropert
 	private String label;
 	private final BusinessObjectMetadataImpl boMeta;
 	private Field field;
+	private boolean exposed;
 
 	public BusinessObjectPropertyMetadataImpl(BusinessObjectMetadataImpl businessObjectMetadataImpl, Field field,
 			BusinessObjectProperty boPropAnnotation) {
@@ -29,6 +31,7 @@ public class BusinessObjectPropertyMetadataImpl implements BusinessObjectPropert
 		this.readonly = boPropAnnotation.readonly();
 		this.searchable = boPropAnnotation.searchable();
 		this.mandatory = boPropAnnotation.mandatory();
+		this.exposed = boPropAnnotation.exposed();
 		this.setLabel(this.getLocalizedLabel());
 	}
 
@@ -83,7 +86,8 @@ public class BusinessObjectPropertyMetadataImpl implements BusinessObjectPropert
 	}
 
 	@JsonIgnore
-	public BusinessObjectMetadataImpl getBoMeta() {
+	@Override
+	public BusinessObjectMetadata getBoMeta() {
 		return boMeta;
 	}
 
@@ -95,11 +99,21 @@ public class BusinessObjectPropertyMetadataImpl implements BusinessObjectPropert
 	public void setLabel(String label) {
 		this.label = label;
 	}
-	
+
 	@JsonIgnore
 	@Override
 	public Class<?> getRuntimeType() {
 		return this.field.getType();
+	}
+
+	@JsonIgnore
+	@Override
+	public boolean isExposed() {
+		return exposed;
+	}
+
+	public void setExposed(boolean exposed) {
+		this.exposed = exposed;
 	}
 
 	private String getLocalizedLabel() {
@@ -109,11 +123,12 @@ public class BusinessObjectPropertyMetadataImpl implements BusinessObjectPropert
 	}
 
 	private LocalizationService localizationService() {
-		return this.getBoMeta().getBean(LocalizationService.class);
+		return ((BusinessObjectMetadataImpl) this.getBoMeta()).getBean(LocalizationService.class);
 	}
 
 	private BusinessObjectMetadataConfigurer boMetaConfigurer() {
-		return this.getBoMeta().getBean(BusinessObjectMetadataConfigurerAdapter.class).getBoMetaConfigurer();
+		return ((BusinessObjectMetadataImpl) this.getBoMeta()).getBean(BusinessObjectMetadataConfigurerAdapter.class)
+				.getBoMetaConfigurer();
 	}
 
 }
