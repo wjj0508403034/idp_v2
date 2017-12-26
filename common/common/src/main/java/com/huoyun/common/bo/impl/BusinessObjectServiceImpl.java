@@ -1,11 +1,14 @@
 package com.huoyun.common.bo.impl;
 
 import org.springframework.data.domain.Page;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.huoyun.common.bo.BoData;
 import com.huoyun.common.bo.BusinessObjectSpecification;
 import com.huoyun.common.bo.param.QueryParam;
 import com.huoyun.common.bo.BusinessObjectFacade;
 import com.huoyun.common.bo.BusinessObjectMapper;
+import com.huoyun.common.bo.BusinessObjectRepository;
 import com.huoyun.common.bo.BusinessObjectService;
 import com.huoyun.common.exceptions.BusinessException;
 import com.huoyun.common.exceptions.ErrorCodes;
@@ -21,10 +24,7 @@ public class BusinessObjectServiceImpl extends AbstractBusinessService implement
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	@Override
 	public Page<BoData> query(String namespace, String name, QueryParam queryParam) throws BusinessException {
-		BusinessObjectMetadata boMeta = this.boMetaRepository().getBoMeta(namespace, name);
-		if (boMeta == null) {
-			throw new BusinessException(ErrorCodes.Business_Object_Entity_Not_Exists);
-		}
+		BusinessObjectMetadata boMeta = this.getBoMeta(namespace, name);
 
 		Query query = this.buildQuery(boMeta, queryParam);
 		BusinessObjectSpecification boSpec = this.buildBoSpec(boMeta, query);
@@ -32,6 +32,27 @@ public class BusinessObjectServiceImpl extends AbstractBusinessService implement
 		Page<?> pageResult = this.boFacade().getBoRepository(boMeta.getBoClass()).query(boSpec);
 
 		return this.boMapper().mapper(pageResult, boMeta, query);
+	}
+
+	@Transactional
+	@Override
+	public BoData createBo(String namespace, String name, BoData boData) throws BusinessException {
+		BusinessObjectMetadata boMeta = this.getBoMeta(namespace, name);
+		Object bo = this.boFacade().newBo(boMeta.getBoClass());
+		this.boMapper().merge(bo, boData, boMeta);
+
+		BusinessObjectRepository<?> boRepo = this.getBoRepository(boMeta.getBoClass());
+		boRepo.create(bo);
+
+		return this.boMapper().mapper(bo, boMeta);
+	}
+
+	private BusinessObjectMetadata getBoMeta(String namespace, String name) throws BusinessException {
+		BusinessObjectMetadata boMeta = this.boMetaRepository().getBoMeta(namespace, name);
+		if (boMeta == null) {
+			throw new BusinessException(ErrorCodes.Business_Object_Entity_Not_Exists);
+		}
+		return boMeta;
 	}
 
 	private BusinessObjectMetadataRepository boMetaRepository() {
@@ -44,6 +65,10 @@ public class BusinessObjectServiceImpl extends AbstractBusinessService implement
 
 	private BusinessObjectMapper boMapper() {
 		return this.getBean(BusinessObjectMapper.class);
+	}
+
+	private BusinessObjectRepository<?> getBoRepository(Class<?> boClass) {
+		return this.boFacade().getBoRepository(boClass);
 	}
 
 	private BusinessObjectSpecification<?> buildBoSpec(BusinessObjectMetadata boMeta, Query query)

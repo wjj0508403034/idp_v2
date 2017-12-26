@@ -46,6 +46,11 @@ public class BusinessObjectRepositoryImpl<T> implements BusinessObjectRepository
 
 		return page;
 	}
+	
+	@Override
+	public void create(Object bo) {
+		this.entityManager.persist(bo);
+	}
 
 	private <S> Root<T> applySpecificationToCriteria(BusinessObjectSpecification<T> spec, CriteriaQuery<S> query)
 			throws BusinessException {
@@ -105,4 +110,6 @@ public class BusinessObjectRepositoryImpl<T> implements BusinessObjectRepository
 
 		return total;
 	}
+
+
 }
