@@ -5,23 +5,23 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
-import com.huoyun.common.bo.BoSpecification;
+import com.huoyun.common.bo.BusinessObjectSpecification;
 import com.huoyun.common.exceptions.BusinessException;
 import com.huoyun.common.query.Filter;
 import com.huoyun.common.query.Query;
 
-public class BoSpecificationImpl<T> implements BoSpecification<T> {
+public class BusinessObjectSpecificationImpl<T> implements BusinessObjectSpecification<T> {
 
 	private Query query;
 	private Class<T> boClass;
 
-	public BoSpecificationImpl(Query query) {
+	public BusinessObjectSpecificationImpl(Query query) {
 		this.query = query;
 	}
 
-	public static <T> BoSpecificationImpl<T> createBoSpec(Class<T> klass, Query query)
+	public static <T> BusinessObjectSpecificationImpl<T> createBoSpec(Class<T> klass, Query query)
 			throws BusinessException {
-		BoSpecificationImpl<T> boSpec = new BoSpecificationImpl<T>(query);
+		BusinessObjectSpecificationImpl<T> boSpec = new BusinessObjectSpecificationImpl<T>(query);
 		boSpec.boClass = klass;
 		return boSpec;
 	}
@@ -40,8 +40,13 @@ public class BoSpecificationImpl<T> implements BoSpecification<T> {
 	}
 
 	@Override
-	public Class<T> getBoClass(){
+	public Class<T> getBoClass() {
 		return this.boClass;
+	}
+
+	@Override
+	public Query getQuery() {
+		return this.query;
 	}
 
 }

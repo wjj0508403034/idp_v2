@@ -14,27 +14,27 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 
-import com.huoyun.common.bo.BoRepository;
-import com.huoyun.common.bo.BoSpecification;
+import com.huoyun.common.bo.BusinessObjectRepository;
+import com.huoyun.common.bo.BusinessObjectSpecification;
 import com.huoyun.common.exceptions.BusinessException;
 
-public class BoRepositoryImpl<T> implements BoRepository<T> {
+public class BusinessObjectRepositoryImpl<T> implements BusinessObjectRepository<T> {
 
 	private EntityManager entityManager;
 	private Class<T> boClass;
 
-	private BoRepositoryImpl(EntityManager entityManager, Class<T> boClass) {
+	private BusinessObjectRepositoryImpl(EntityManager entityManager, Class<T> boClass) {
 		this.entityManager = entityManager;
 		this.boClass = boClass;
 	}
 
-	public static <T> BoRepository<T> newRepo(EntityManager entityManager, Class<T> boClass) {
-		BoRepositoryImpl<T> repo = new BoRepositoryImpl<T>(entityManager, boClass);
+	public static <T> BusinessObjectRepository<T> newRepo(EntityManager entityManager, Class<T> boClass) {
+		BusinessObjectRepositoryImpl<T> repo = new BusinessObjectRepositoryImpl<T>(entityManager, boClass);
 		return repo;
 	}
 
 	@Override
-	public Page<T> query(BoSpecification<T> spec, Pageable pageable) throws BusinessException {
+	public Page<T> query(BusinessObjectSpecification<T> spec) throws BusinessException {
 		CriteriaBuilder builder = this.entityManager.getCriteriaBuilder();
 		CriteriaQuery<T> criteriaQuery = builder.createQuery(this.boClass);
 
@@ -42,12 +42,12 @@ public class BoRepositoryImpl<T> implements BoRepository<T> {
 		criteriaQuery.select(root);
 
 		TypedQuery<T> query = this.entityManager.createQuery(criteriaQuery);
-		Page<T> page = pageable == null ? new PageImpl<T>(query.getResultList()) : readPage(query, pageable, spec);
+		Page<T> page = readPage(query, spec.getQuery().getPageable(), spec);
 
 		return page;
 	}
 
-	private <S> Root<T> applySpecificationToCriteria(BoSpecification<T> spec, CriteriaQuery<S> query)
+	private <S> Root<T> applySpecificationToCriteria(BusinessObjectSpecification<T> spec, CriteriaQuery<S> query)
 			throws BusinessException {
 
 		Root<T> root = (Root<T>) query.from(this.boClass);
@@ -66,7 +66,8 @@ public class BoRepositoryImpl<T> implements BoRepository<T> {
 		return root;
 	}
 
-	private Page<T> readPage(TypedQuery<T> query, Pageable pageable, BoSpecification<T> spec) throws BusinessException {
+	private Page<T> readPage(TypedQuery<T> query, Pageable pageable, BusinessObjectSpecification<T> spec)
+			throws BusinessException {
 
 		query.setFirstResult(pageable.getOffset());
 		query.setMaxResults(pageable.getPageSize());
@@ -77,7 +78,7 @@ public class BoRepositoryImpl<T> implements BoRepository<T> {
 		return new PageImpl<T>(content, pageable, total);
 	}
 
-	private TypedQuery<Long> getCountQuery(BoSpecification<T> spec) throws BusinessException {
+	private TypedQuery<Long> getCountQuery(BusinessObjectSpecification<T> spec) throws BusinessException {
 
 		CriteriaBuilder builder = this.entityManager.getCriteriaBuilder();
 		CriteriaQuery<Long> query = builder.createQuery(Long.class);
