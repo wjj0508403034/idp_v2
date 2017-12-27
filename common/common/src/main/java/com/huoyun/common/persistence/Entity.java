@@ -14,4 +14,16 @@ public interface Entity extends Serializable{
 
 	Long getVersion();
 
+	void beforeCreate();
+
+	void afterCreate();
+
+	void beforeUpdate();
+
+	void afterUpdate();
+
+	void beforeDelete();
+
+	void afterDelete();
+
 }

@@ -20,18 +20,18 @@ public abstract class BaseEntity implements Entity {
 	@Id
 	@GenericGenerator(name = "IdGenerator", strategy = "com.huoyun.common.persistence.IdGenerator")
 	@GeneratedValue(generator = "IdGenerator")
-	@BusinessObjectProperty
+	@BusinessObjectProperty(readonly = true)
 	private Long id;
 
 	@Version
 	private Long version;
 
 	@Column
-	@BusinessObjectProperty
+	@BusinessObjectProperty(readonly = true)
 	private DateTime createTime;
 
 	@Column
-	@BusinessObjectProperty
+	@BusinessObjectProperty(readonly = true)
 	private DateTime updateTime;
 
 	@JsonIgnore
@@ -69,5 +69,63 @@ public abstract class BaseEntity implements Entity {
 	@Override
 	public Long getId() {
 		return this.id;
+	}
+
+	@Override
+	public final void beforeCreate() {
+		DateTime now = DateTime.now();
+		this.setCreateTime(now);
+		this.setUpdateTime(now);
+		this.preCreate();
+	}
+
+	protected void preCreate() {
+
+	}
+
+	@Override
+	public final void afterCreate() {
+		this.postCreate();
+	}
+
+	protected void postCreate() {
+
+	}
+
+	@Override
+	public final void beforeUpdate() {
+		this.setUpdateTime(DateTime.now());
+		this.preUpdate();
+	}
+
+	protected void preUpdate() {
+
+	}
+
+	@Override
+	public final void afterUpdate() {
+		this.postUpdate();
+	}
+
+	protected void postUpdate() {
+
+	}
+	
+	@Override
+	public final void beforeDelete(){
+		this.preDelete();
+	}
+	
+	protected void preDelete(){
+		
+	}
+	
+	@Override
+	public final void afterDelete(){
+		this.postDelete();
+	}
+	
+	protected void postDelete(){
+		
 	}
 }

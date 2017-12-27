@@ -34,7 +34,7 @@ public class AdminAccount extends BaseEntity {
 	private String email;
 
 	@Column
-	@BusinessObjectProperty(exposed = false)
+	@BusinessObjectProperty(exposed = false, readonly = true)
 	private String password;
 
 	@Column

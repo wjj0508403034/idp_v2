@@ -3,8 +3,6 @@ package com.huoyun.common.persistence;
 import org.aspectj.lang.annotation.After;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
-import org.joda.time.DateTime;
-
 import com.huoyun.common.service.AbstractBusinessService;
 
 @Aspect
@@ -14,11 +12,8 @@ public class EntityCrudAspect extends AbstractBusinessService {
 	public void beforeCreate(Object obj) {
 		if (obj instanceof Entity) {
 			Entity entity = (Entity) obj;
+			entity.beforeCreate();
 			this.entityConfigurer().beforeCreate(entity);
-
-			DateTime now = DateTime.now();
-			entity.setCreateTime(now);
-			entity.setUpdateTime(now);
 		}
 	}
 
@@ -26,6 +21,7 @@ public class EntityCrudAspect extends AbstractBusinessService {
 	public void afterCreate(Object obj) {
 		if (obj instanceof Entity) {
 			Entity entity = (Entity) obj;
+			entity.afterCreate();
 			this.entityConfigurer().afterCreate(entity);
 		}
 	}
@@ -34,10 +30,8 @@ public class EntityCrudAspect extends AbstractBusinessService {
 	public void beforeUpdate(Object obj) {
 		if (obj instanceof Entity) {
 			Entity entity = (Entity) obj;
+			entity.beforeUpdate();
 			this.entityConfigurer().beforeUpdate(entity);
-
-			DateTime now = DateTime.now();
-			entity.setUpdateTime(now);
 		}
 	}
 
@@ -45,6 +39,7 @@ public class EntityCrudAspect extends AbstractBusinessService {
 	public void afterUpdate(Object obj) {
 		if (obj instanceof Entity) {
 			Entity entity = (Entity) obj;
+			entity.afterUpdate();
 			this.entityConfigurer().afterUpdate(entity);
 		}
 	}
@@ -53,6 +48,7 @@ public class EntityCrudAspect extends AbstractBusinessService {
 	public void beforeDelete(Object obj) {
 		if (obj instanceof Entity) {
 			Entity entity = (Entity) obj;
+			entity.beforeDelete();
 			this.entityConfigurer().beforeDelete(entity);
 		}
 	}
@@ -61,6 +57,7 @@ public class EntityCrudAspect extends AbstractBusinessService {
 	public void afterDelete(Object obj) {
 		if (obj instanceof Entity) {
 			Entity entity = (Entity) obj;
+			entity.afterDelete();
 			this.entityConfigurer().afterDelete(entity);
 		}
 	}
