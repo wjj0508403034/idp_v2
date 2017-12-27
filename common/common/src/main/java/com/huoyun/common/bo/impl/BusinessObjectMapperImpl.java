@@ -47,7 +47,7 @@ public class BusinessObjectMapperImpl implements BusinessObjectMapper {
 	public void merge(Object bo, BoData boData, BusinessObjectMetadata boMeta) throws BusinessException {
 		if (boData != null) {
 			for (BusinessObjectPropertyMetadata propMeta : boMeta.getPropertyMetadatas()) {
-				if (!this.isPropReadonly(propMeta)) {
+				if (this.isPropCanMerge(propMeta)) {
 					if (boData.containsKey(propMeta.getName())) {
 						Object propValue = boData.get(propMeta.getName());
 						this.setPropValue(propMeta, bo, propValue);
@@ -81,8 +81,16 @@ public class BusinessObjectMapperImpl implements BusinessObjectMapper {
 		return false;
 	}
 
-	private boolean isPropReadonly(BusinessObjectPropertyMetadata propMeta) {
-		return false;
+	private boolean isPropCanMerge(BusinessObjectPropertyMetadata propMeta) {
+		if (propMeta.isIdField()) {
+			return false;
+		}
+
+		if (propMeta.isReadonly()) {
+			return false;
+		}
+
+		return true;
 	}
 
 	private void setPropValue(BusinessObjectPropertyMetadata propMeta, Object bo, Object propValue)

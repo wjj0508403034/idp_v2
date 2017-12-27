@@ -2,6 +2,8 @@ package com.huoyun.common.metadata.impl;
 
 import java.lang.reflect.Field;
 
+import javax.persistence.Id;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.huoyun.common.localization.LocalizationService;
 import com.huoyun.common.metadata.BusinessObjectMetadata;
@@ -22,6 +24,7 @@ public class BusinessObjectPropertyMetadataImpl implements BusinessObjectPropert
 	private final BusinessObjectMetadataImpl boMeta;
 	private Field field;
 	private boolean exposed;
+	private boolean idField;
 
 	public BusinessObjectPropertyMetadataImpl(BusinessObjectMetadataImpl businessObjectMetadataImpl, Field field,
 			BusinessObjectProperty boPropAnnotation) {
@@ -33,6 +36,9 @@ public class BusinessObjectPropertyMetadataImpl implements BusinessObjectPropert
 		this.mandatory = boPropAnnotation.mandatory();
 		this.exposed = boPropAnnotation.exposed();
 		this.setLabel(this.getLocalizedLabel());
+
+		Id idAnnotation = field.getAnnotation(Id.class);
+		this.idField = idAnnotation != null;
 	}
 
 	@Override
@@ -110,6 +116,12 @@ public class BusinessObjectPropertyMetadataImpl implements BusinessObjectPropert
 	@Override
 	public boolean isExposed() {
 		return exposed;
+	}
+
+	@JsonIgnore
+	@Override
+	public boolean isIdField() {
+		return idField;
 	}
 
 	public void setExposed(boolean exposed) {

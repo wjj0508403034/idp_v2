@@ -22,4 +22,6 @@ public interface BusinessObjectPropertyMetadata {
 
 	BusinessObjectMetadata getBoMeta();
 
+	boolean isIdField();
+
 }

@@ -29,9 +29,29 @@ public class BusinessObjectServiceImpl extends AbstractBusinessService implement
 		Query query = this.buildQuery(boMeta, queryParam);
 		BusinessObjectSpecification boSpec = this.buildBoSpec(boMeta, query);
 
-		Page<?> pageResult = this.boFacade().getBoRepository(boMeta.getBoClass()).query(boSpec);
+		Page<?> pageResult = this.boRepository(boMeta.getBoClass()).query(boSpec);
 
 		return this.boMapper().mapper(pageResult, boMeta, query);
+	}
+
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	@Override
+	public Long count(String namespace, String name, QueryParam queryParam) throws BusinessException {
+		BusinessObjectMetadata boMeta = this.getBoMeta(namespace, name);
+
+		Query query = this.buildQuery(boMeta, queryParam);
+		BusinessObjectSpecification boSpec = this.buildBoSpec(boMeta, query);
+
+		return this.boRepository(boMeta.getBoClass()).count(boSpec);
+	}
+
+	@Override
+	public BoData load(String namespace, String name, Long id) throws BusinessException {
+		BusinessObjectMetadata boMeta = this.getBoMeta(namespace, name);
+
+		Object bo = this.loadBoById(boMeta, id);
+
+		return this.boMapper().mapper(bo, boMeta);
 	}
 
 	@Transactional
@@ -41,10 +61,39 @@ public class BusinessObjectServiceImpl extends AbstractBusinessService implement
 		Object bo = this.boFacade().newBo(boMeta.getBoClass());
 		this.boMapper().merge(bo, boData, boMeta);
 
-		BusinessObjectRepository<?> boRepo = this.getBoRepository(boMeta.getBoClass());
+		BusinessObjectRepository<?> boRepo = this.boRepository(boMeta.getBoClass());
 		boRepo.create(bo);
 
 		return this.boMapper().mapper(bo, boMeta);
+	}
+
+	@Transactional
+	@Override
+	public BoData updateBo(String namespace, String name, Long id, BoData boData) throws BusinessException {
+		BusinessObjectMetadata boMeta = this.getBoMeta(namespace, name);
+		BusinessObjectRepository<?> boRepo = this.boRepository(boMeta.getBoClass());
+
+		Object bo = this.loadBoById(boMeta, id);
+		this.boMapper().merge(bo, boData, boMeta);
+		boRepo.update(bo);
+
+		return this.boMapper().mapper(bo, boMeta);
+	}
+
+	@Transactional
+	@Override
+	public void delete(String namespace, String name, Long id) throws BusinessException {
+		BusinessObjectMetadata boMeta = this.getBoMeta(namespace, name);
+		Object bo = this.loadBoById(boMeta, id);
+		this.boRepository(boMeta.getBoClass()).delete(bo);
+	}
+
+	private Object loadBoById(BusinessObjectMetadata boMeta, Long id) throws BusinessException {
+		Object bo = this.boRepository(boMeta.getBoClass()).load(id);
+		if (bo == null) {
+			throw new BusinessException(ErrorCodes.Business_Object_Not_Found);
+		}
+		return bo;
 	}
 
 	private BusinessObjectMetadata getBoMeta(String namespace, String name) throws BusinessException {
@@ -67,7 +116,7 @@ public class BusinessObjectServiceImpl extends AbstractBusinessService implement
 		return this.getBean(BusinessObjectMapper.class);
 	}
 
-	private BusinessObjectRepository<?> getBoRepository(Class<?> boClass) {
+	private BusinessObjectRepository<?> boRepository(Class<?> boClass) {
 		return this.boFacade().getBoRepository(boClass);
 	}
 

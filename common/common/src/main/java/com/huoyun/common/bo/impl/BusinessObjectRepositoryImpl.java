@@ -13,6 +13,7 @@ import javax.persistence.criteria.Root;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.Modifying;
 
 import com.huoyun.common.bo.BusinessObjectRepository;
 import com.huoyun.common.bo.BusinessObjectSpecification;
@@ -46,10 +47,44 @@ public class BusinessObjectRepositoryImpl<T> implements BusinessObjectRepository
 
 		return page;
 	}
-	
+
+	@Override
+	public Long count(BusinessObjectSpecification<T> spec) throws BusinessException {
+		CriteriaBuilder builder = this.entityManager.getCriteriaBuilder();
+		CriteriaQuery<Long> criteriaQuery = builder.createQuery(Long.class);
+		Root<T> root = applySpecificationToCriteria(spec, criteriaQuery);
+
+		if (criteriaQuery.isDistinct()) {
+			criteriaQuery.select(builder.countDistinct(root));
+		} else {
+			criteriaQuery.select(builder.count(root));
+		}
+
+		TypedQuery<Long> query = this.entityManager.createQuery(criteriaQuery);
+
+		return executeCountQuery(query);
+	}
+
 	@Override
 	public void create(Object bo) {
 		this.entityManager.persist(bo);
+	}
+
+	@Modifying
+	@Override
+	public void update(Object bo) {
+		this.entityManager.merge(bo);
+	}
+
+	@Modifying
+	@Override
+	public void delete(Object bo) {
+		this.entityManager.remove(bo);
+	}
+
+	@Override
+	public T load(Long id) {
+		return this.entityManager.find(this.boClass, id);
 	}
 
 	private <S> Root<T> applySpecificationToCriteria(BusinessObjectSpecification<T> spec, CriteriaQuery<S> query)
@@ -110,6 +145,5 @@ public class BusinessObjectRepositoryImpl<T> implements BusinessObjectRepository
 
 		return total;
 	}
-
 
 }
