@@ -5,7 +5,7 @@
 
 	<appender name="WEB_APP_CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
 		<encoder class="ch.qos.logback.core.encoder.LayoutWrappingEncoder">
-			<layout class="com.huoyun.log.layout.WebPatternLayout">
+			<layout class="com.huoyun.common.log.layout.WebPatternLayout">
 				<Pattern>${WEB_APP_CONSOLE_LOG_PATTERN}</Pattern>
 			</layout>
 		</encoder>
