@@ -11,8 +11,9 @@ import com.huoyun.common.bo.impl.BusinessObjectServiceImpl;
 import com.huoyun.common.exceptions.ErrorHandler;
 import com.huoyun.common.metadata.BusinessObjectMetadataRepository;
 import com.huoyun.common.metadata.impl.BusinessObjectMetadataRepositoryImpl;
+import com.huoyun.common.ui.UIMetaAutoConfiguration;
 
-@Import({ ErrorHandler.class })
+@Import({ ErrorHandler.class ,UIMetaAutoConfiguration.class})
 @Configuration
 public class BusinessObjectAutoConfiguration {
 

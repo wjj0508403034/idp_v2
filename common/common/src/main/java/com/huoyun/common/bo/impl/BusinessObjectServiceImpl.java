@@ -1,5 +1,6 @@
 package com.huoyun.common.bo.impl;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,24 +20,28 @@ import com.huoyun.common.query.criteria.CriteriaBuilder;
 import com.huoyun.common.query.impl.QueryImpl;
 import com.huoyun.common.service.AbstractBusinessService;
 
-public class BusinessObjectServiceImpl extends AbstractBusinessService implements BusinessObjectService {
+public class BusinessObjectServiceImpl extends AbstractBusinessService
+		implements BusinessObjectService {
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	@Override
-	public Page<BoData> query(String namespace, String name, QueryParam queryParam) throws BusinessException {
+	public Page<BoData> query(String namespace, String name,
+			QueryParam queryParam) throws BusinessException {
 		BusinessObjectMetadata boMeta = this.getBoMeta(namespace, name);
 
 		Query query = this.buildQuery(boMeta, queryParam);
 		BusinessObjectSpecification boSpec = this.buildBoSpec(boMeta, query);
 
-		Page<?> pageResult = this.boRepository(boMeta.getBoClass()).query(boSpec);
+		Page<?> pageResult = this.boRepository(boMeta.getBoClass()).query(
+				boSpec);
 
 		return this.boMapper().mapper(pageResult, boMeta, query);
 	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	@Override
-	public Long count(String namespace, String name, QueryParam queryParam) throws BusinessException {
+	public Long count(String namespace, String name, QueryParam queryParam)
+			throws BusinessException {
 		BusinessObjectMetadata boMeta = this.getBoMeta(namespace, name);
 
 		Query query = this.buildQuery(boMeta, queryParam);
@@ -46,7 +51,8 @@ public class BusinessObjectServiceImpl extends AbstractBusinessService implement
 	}
 
 	@Override
-	public BoData load(String namespace, String name, Long id) throws BusinessException {
+	public BoData load(String namespace, String name, Long id)
+			throws BusinessException {
 		BusinessObjectMetadata boMeta = this.getBoMeta(namespace, name);
 
 		Object bo = this.loadBoById(boMeta, id);
@@ -56,12 +62,14 @@ public class BusinessObjectServiceImpl extends AbstractBusinessService implement
 
 	@Transactional
 	@Override
-	public BoData createBo(String namespace, String name, BoData boData) throws BusinessException {
+	public BoData createBo(String namespace, String name, BoData boData)
+			throws BusinessException {
 		BusinessObjectMetadata boMeta = this.getBoMeta(namespace, name);
 		Object bo = this.boFacade().newBo(boMeta.getBoClass());
 		this.boMapper().merge(bo, boData, boMeta);
 
-		BusinessObjectRepository<?> boRepo = this.boRepository(boMeta.getBoClass());
+		BusinessObjectRepository<?> boRepo = this.boRepository(boMeta
+				.getBoClass());
 		boRepo.create(bo);
 
 		return this.boMapper().mapper(bo, boMeta);
@@ -69,9 +77,11 @@ public class BusinessObjectServiceImpl extends AbstractBusinessService implement
 
 	@Transactional
 	@Override
-	public BoData updateBo(String namespace, String name, Long id, BoData boData) throws BusinessException {
+	public BoData updateBo(String namespace, String name, Long id, BoData boData)
+			throws BusinessException {
 		BusinessObjectMetadata boMeta = this.getBoMeta(namespace, name);
-		BusinessObjectRepository<?> boRepo = this.boRepository(boMeta.getBoClass());
+		BusinessObjectRepository<?> boRepo = this.boRepository(boMeta
+				.getBoClass());
 
 		Object bo = this.loadBoById(boMeta, id);
 		this.boMapper().merge(bo, boData, boMeta);
@@ -82,13 +92,15 @@ public class BusinessObjectServiceImpl extends AbstractBusinessService implement
 
 	@Transactional
 	@Override
-	public void delete(String namespace, String name, Long id) throws BusinessException {
+	public void delete(String namespace, String name, Long id)
+			throws BusinessException {
 		BusinessObjectMetadata boMeta = this.getBoMeta(namespace, name);
 		Object bo = this.loadBoById(boMeta, id);
 		this.boRepository(boMeta.getBoClass()).delete(bo);
 	}
 
-	private Object loadBoById(BusinessObjectMetadata boMeta, Long id) throws BusinessException {
+	private Object loadBoById(BusinessObjectMetadata boMeta, Long id)
+			throws BusinessException {
 		Object bo = this.boRepository(boMeta.getBoClass()).load(id);
 		if (bo == null) {
 			throw new BusinessException(ErrorCodes.Business_Object_Not_Found);
@@ -96,10 +108,13 @@ public class BusinessObjectServiceImpl extends AbstractBusinessService implement
 		return bo;
 	}
 
-	private BusinessObjectMetadata getBoMeta(String namespace, String name) throws BusinessException {
-		BusinessObjectMetadata boMeta = this.boMetaRepository().getBoMeta(namespace, name);
+	private BusinessObjectMetadata getBoMeta(String namespace, String name)
+			throws BusinessException {
+		BusinessObjectMetadata boMeta = this.boMetaRepository().getBoMeta(
+				namespace, name);
 		if (boMeta == null) {
-			throw new BusinessException(ErrorCodes.Business_Object_Entity_Not_Exists);
+			throw new BusinessException(
+					ErrorCodes.Business_Object_Entity_Not_Exists);
 		}
 		return boMeta;
 	}
@@ -120,16 +135,34 @@ public class BusinessObjectServiceImpl extends AbstractBusinessService implement
 		return this.boFacade().getBoRepository(boClass);
 	}
 
-	private BusinessObjectSpecification<?> buildBoSpec(BusinessObjectMetadata boMeta, Query query)
+	private BusinessObjectSpecification<?> buildBoSpec(
+			BusinessObjectMetadata boMeta, Query query)
 			throws BusinessException {
-		return BusinessObjectSpecificationImpl.createBoSpec(boMeta.getBoClass(), query);
+		return BusinessObjectSpecificationImpl.createBoSpec(
+				boMeta.getBoClass(), query);
 	}
 
-	private Query buildQuery(BusinessObjectMetadata boMeta, QueryParam queryParam) throws BusinessException {
-		CriteriaBuilder builder = new CriteriaBuilder(boMeta, queryParam.getFilter());
+	private Query buildQuery(BusinessObjectMetadata boMeta,
+			QueryParam queryParam) throws BusinessException {
 		Query query = new QueryImpl();
-		query.addCriteria(builder.build()).setSelect(queryParam.getSelect()).setPageable(queryParam.getPageable());
+		CriteriaBuilder builder = this.createCriteriaBuilder(boMeta,
+				queryParam.getFilter());
+		if (builder != null) {
+			query.addCriteria(builder.build());
+		}
+
+		query.setSelect(queryParam.getSelect()).setPageable(
+				queryParam.getPageable());
 		return query;
+	}
+
+	private CriteriaBuilder createCriteriaBuilder(
+			BusinessObjectMetadata boMeta, String filter) {
+		if (StringUtils.isEmpty(filter)) {
+			return null;
+		}
+
+		return new CriteriaBuilder(boMeta, filter);
 	}
 
 }

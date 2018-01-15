@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root namespace="com.huoyun.sbo" name="AdminAccount">
+	<header>
+		<title ref="fullName"></title>
+		<subtitle ref="email"></subtitle>
+	</header>
+	<sections>
+		<section label="uimeta.section.defaultLabel">
+			<properties>
+				<property ref="firstName"></property>
+				<property ref="lastName"></property>
+				<property ref="locked"></property>
+				<property ref="email"></property>
+			</properties>
+		</section>
+	</sections>
+	<listview select="id,companyName,description" orderby="id">
+		<columns>
+			<column ref="fullName"></column>
+			<column ref="email"></column>
+			<column ref="locked"></column>
+		</columns>
+	</listview>
+	<filters>
+		<filter label="ALL" expression=""></filter>
+	</filters>
+	<properties>
+		<property name="id"></property>
+		<property name="firstName"></property>
+		<property name="lastName"></property>
+		<property name="email"></property>
+		<property name="locked"></property>
+		<property name="fullName"></property>
+	</properties>
+</root>

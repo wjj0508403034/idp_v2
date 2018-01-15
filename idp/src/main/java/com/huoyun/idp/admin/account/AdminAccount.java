@@ -5,7 +5,9 @@ import java.util.Collection;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.AuthorityUtils;
 
@@ -30,7 +32,7 @@ public class AdminAccount extends BaseEntity {
 	private String lastName;
 
 	@Column
-	@BusinessObjectProperty
+	@BusinessObjectProperty(readonly = true)
 	private String email;
 
 	@Column
@@ -40,6 +42,10 @@ public class AdminAccount extends BaseEntity {
 	@Column
 	@BusinessObjectProperty
 	private boolean locked;
+
+	@BusinessObjectProperty
+	@Transient
+	private String fullName;
 
 	public String getFirstName() {
 		return firstName;
@@ -85,6 +91,24 @@ public class AdminAccount extends BaseEntity {
 
 	public void setLocked(boolean locked) {
 		this.locked = locked;
+	}
+
+	public String getFullName() {
+		if (StringUtils.isEmpty(this.fullName)) {
+			StringBuilder sb = new StringBuilder();
+			if (!StringUtils.isEmpty(this.getLastName())) {
+				sb.append(this.getLastName());
+			}
+
+			if (!StringUtils.isEmpty(this.getFirstName())) {
+				sb.append(" ");
+				sb.append(this.getFirstName());
+			}
+
+			this.fullName = sb.toString();
+		}
+
+		return this.fullName;
 	}
 
 }
