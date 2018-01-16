@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<root namespace="com.huoyun.sbo" name="AdminAccount">
+<root namespace="com.huoyun.bo" name="AdminAccount">
 	<header>
 		<title ref="fullName"></title>
 		<subtitle ref="email"></subtitle>

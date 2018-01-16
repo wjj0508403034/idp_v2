@@ -3,9 +3,6 @@ package com.huoyun.common.ui.impl;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.huoyun.common.metadata.BusinessObjectMetadata;
 import com.huoyun.common.metadata.BusinessObjectPropertyMetadata;
 import com.huoyun.common.ui.UIMeta;
@@ -14,9 +11,6 @@ import com.huoyun.common.ui.xml.Root;
 import com.huoyun.common.ui.xml.Section;
 
 public class UIMetaImpl implements UIMeta {
-
-	private static final Logger LOGGER = LoggerFactory
-			.getLogger(UIMetaImpl.class);
 
 	private String boName;
 	private String boNamespace;
@@ -38,19 +32,21 @@ public class UIMetaImpl implements UIMeta {
 			}
 		}
 	}
-	
-	public UIMeta mergeXml(Root root){
+
+	public UIMeta mergeXml(Root root) {
 		ListView listView = root.getListview();
-		if(listView != null){
+		if (listView != null) {
 			this.listview = new UIListView(listView);
 		}
-		
-		for(Section section: root.getSections()){
+
+		for (Section section : root.getSections()) {
 			this.sections.add(new UISection(section));
 		}
-		
-		
-		
+
+		// for(Property prop: root.getProperties()){
+		//
+		// }
+
 		return this;
 	}
 
